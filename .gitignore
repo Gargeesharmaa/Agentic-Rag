@@ -1,0 +1,7 @@
+.envv/
+.DS_Store
+__pycache__/
+.vscode/
+.env
+.venv/
+venv/
