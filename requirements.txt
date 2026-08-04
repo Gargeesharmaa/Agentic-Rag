@@ -1,0 +1,14 @@
+langgraph
+langchain
+fastapi
+uvicorn
+pydantic
+langchain-community
+langchain-groq
+qdrant-client
+sentence-transformers
+python-dotenv
+pypdf
+langchain-google-genai
+langsmith
+streamlit
