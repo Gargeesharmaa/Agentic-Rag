@@ -7,16 +7,48 @@ from langchain_groq import ChatGroq
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import create_react_agent 
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.postgres import PostgresSaver
+from psycopg_pool import ConnectionPool
 from pydantic import BaseModel, Field
 
 from rag.retrieval import Retriever
 
 load_dotenv()
 
+DB_URL = os.getenv("DATABASE_URL")
+
+# --- Postgres Checkpointer Setup ---
+checkpointer = None
+
+if DB_URL:
+    try:
+        # Create connection pool
+        pool = ConnectionPool(
+            conninfo=DB_URL, 
+            max_size=10, 
+            kwargs={"autocommit": True, "prepare_threshold": 0}
+        )
+        
+        # Initialize Postgres checkpointer with persistent pool
+        checkpointer = PostgresSaver(pool)
+        
+        # Setup tables once
+        with pool.connection() as conn:
+            checkpointer.setup()
+        print("✅ PostgreSQL checkpointer successfully initialized.")
+    except Exception as e:
+        print(f"⚠️ Could not connect to PostgreSQL: {e}")
+        print("🔄 Falling back to in-memory checkpointer (MemorySaver).")
+        checkpointer = MemorySaver()
+else:
+    print("ℹ️ DATABASE_URL not set in .env. Using MemorySaver.")
+    checkpointer = MemorySaver()
+
+
 # Initialize fundamental elements
 document_retriever = Retriever()
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
-memory = MemorySaver()
+
 
 class GraphState(TypedDict):
     question: str
@@ -139,14 +171,21 @@ system_prompt = (
     "- If asked about company policies, data, or file uploads, route the task to 'agentic_rag_tool'."
 )
 
-# Create the Master React Agent
+# Create the Master React Agent using Postgres Checkpointer
 master_agent = create_react_agent(
-    model=llm, tools=tools, prompt=system_prompt, checkpointer=memory
+    model=llm, 
+    tools=tools, 
+    prompt=system_prompt, 
+    checkpointer=checkpointer
 )
 
 if __name__ == "__main__":
+    config = {"configurable": {"thread_id": "test_session_1"}}
     query = "why we need ensemble models?"
-    response = master_agent.invoke({"messages": [("human", query)]})
+    response = master_agent.invoke(
+        {"messages": [("human", query)]}, 
+        config=config
+    )
 
     # Print final result
     print("\n=== Final Master Agent Output ===")
