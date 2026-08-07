@@ -1,7 +1,20 @@
+# Virtual Environments
 .envv/
-.DS_Store
-__pycache__/
-.vscode/
-.env
 .venv/
 venv/
+
+# Environment Variables & Secrets
+.env
+
+# System & Editor Files
+.DS_Store
+.vscode/
+__pycache__/
+
+# Vector Databases & SQLite Storage
+chroma/
+*.sqlite3
+
+# Local Chat Logs
+chat_log.json
+chat_history.json
