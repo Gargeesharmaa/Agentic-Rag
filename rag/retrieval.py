@@ -1,12 +1,12 @@
 from typing import List
 from langchain_core.documents import Document
-from vectorstore import VectorStorageManager
+from rag.vectorstore import VectorStorageManager
 
 class Retriever:
     """Retrieves the most relevant documents for a user query."""
     def __init__(self):
         self.manager = VectorStorageManager()
-        self.vector_searcher = self.manager.load_existing_store()
+        self.vector_searcher = self.manager.load_existing_vectorstore()
 
     def retrieve(
             self,
