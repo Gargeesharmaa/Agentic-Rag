@@ -71,10 +71,10 @@ demo = gr.ChatInterface(
     description="Ask general corporate questions or request information from internal knowledge base documents.",
     examples=[
         "Why do we need ensemble models?",
-        "What are our key company policies?",
         "Can you explain how random forests work?",
     ],
 )
 
 if __name__ == "__main__":
-    demo.launch(server_name="127.0.0.1", server_port=7860, share=False)
+
+    demo.launch(server_name="127.0.0.1", server_port=0, share=False)
