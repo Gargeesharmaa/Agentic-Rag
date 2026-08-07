@@ -1,9 +1,13 @@
-from text_splitter import TextSplitter
-from vectorstore import VectorStorageManager
 
-file_to_process = "your_document.docx" 
-splitter = TextSplitter(file_path=file_to_process, chunk_size=1000, chunk_overlap=200)
-chunks = splitter.split_text()
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from rag.vectorstore import VectorStorageManager
+from rag.document_loader import DocumentLoader 
+
+loader = DocumentLoader("./ml_book.pdf")
+docs = loader.load_document()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+chunks = text_splitter.split_documents(docs)
 
 db_manager = VectorStorageManager(persist_directory="./chroma")
 vector_db = db_manager.create_vectorstore(chunks)
