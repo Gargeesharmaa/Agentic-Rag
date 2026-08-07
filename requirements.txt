@@ -1,14 +1,12 @@
 langgraph
 langchain
-fastapi
-uvicorn
 pydantic
 langchain-community
 langchain-groq
-qdrant-client
+langchain-chroma
 sentence-transformers
 python-dotenv
 pypdf
 langchain-google-genai
 langsmith
-streamlit
+gradio
