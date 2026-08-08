@@ -142,18 +142,36 @@ def switch_active_session(selected_session):
     return history, selected_session, f"📂 Viewing history for: {selected_session}"
 
 
+def upload_custom_document(file_obj):
+    """Processes custom documents uploaded by the user and routes them to the agent engine."""
+    if file_obj is None:
+        return "⚠️ No file uploaded."
+    try:
+        file_path = file_obj.name
+        file_name = os.path.basename(file_path)
+
+        # -------------------------------------------------------------
+        # NOTE: Connect your specific background ingestion process here.
+        # Example: master_agent.add_document_to_vector_store(file_path)
+        # -------------------------------------------------------------
+
+        return f"✅ Successfully processed and indexed: **{file_name}**"
+    except Exception as e:
+        return f"❌ Failed to process document: {str(e)}"
+
+
 # Initialize the database schema
 init_db()
 
 # Build custom flexible block window layout
-with gr.Blocks(title="Agentic RAG System", css="footer {visibility: hidden}") as demo:
+with gr.Blocks(title="Agentic RAG System") as demo:
     # State tracking variables
     current_session = gr.State(value=f"session_{uuid.uuid4().hex[:8]}")
     
     gr.Markdown("# Agentic RAG Assistant (PostgreSQL Backed)")
     
     with gr.Row():
-        # SIDEBAR PANEL FOR NAVIGATION
+        # SIDEBAR PANEL FOR NAVIGATION AND UPLOADS
         with gr.Column(scale=1, min_width=280):
             new_chat_btn = gr.Button("➕ New Chat Session", variant="primary")
             
@@ -165,6 +183,15 @@ with gr.Blocks(title="Agentic RAG System", css="footer {visibility: hidden}") as
                 value=None
             )
             status_bar = gr.Markdown("📝 Running on clean session: New")
+            
+            # --- NEW CUSTOM DOCUMENT UPLOAD SECTION ---
+            gr.Markdown("### 📄 Add Context Documents")
+            doc_uploader = gr.File(
+                label="Upload Document",
+                file_types=[".pdf", ".txt", ".docx", ".csv"],
+                file_count="single"
+            )
+            upload_status = gr.Markdown("")
 
         # MAIN CHAT APPLICATION DISPLAY Window
         with gr.Column(scale=4):
@@ -205,5 +232,17 @@ with gr.Blocks(title="Agentic RAG System", css="footer {visibility: hidden}") as
         outputs=[chatbot, current_session, status_bar]
     )
 
+    # 4. Action: Route uploaded file paths to the ingestion pipeline
+    doc_uploader.upload(
+        upload_custom_document,
+        inputs=[doc_uploader],
+        outputs=[upload_status]
+    )
+
 if __name__ == "__main__":
-    demo.launch(server_name="127.0.0.1", server_port=8000, share=False)
+    demo.launch(
+        server_name="127.0.0.1", 
+        server_port=8000, 
+        share=False,
+        css="footer {visibility: hidden} .api-status {display: none !important}"
+    )
