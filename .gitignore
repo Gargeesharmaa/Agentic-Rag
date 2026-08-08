@@ -18,3 +18,7 @@ chroma/
 # Local Chat Logs
 chat_log.json
 chat_history.json
+
+data/
+db-data/
+.git/
