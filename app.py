@@ -55,10 +55,24 @@ def save_to_db(session_id, user_message, bot_response):
         print(f"⚠️ Error saving log to PostgreSQL: {e}")
 
 
-def load_saved_history(session_id="gradio_default_session"):
-    """Loads past conversation turns from PostgreSQL for the UI."""
-    formatted_history = []
+def load_all_sessions():
+    """Fetches a distinct list of all unique active session IDs from PostgreSQL."""
     if not DB_URL:
+        return []
+    try:
+        with psycopg.connect(DB_URL) as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT DISTINCT session_id FROM chat_logs ORDER BY session_id DESC;")
+                return [row[0] for row in cur.fetchall() if row[0]]
+    except Exception as e:
+        print(f"⚠️ Error loading unique session lists: {e}")
+        return []
+
+
+def load_saved_history(session_id):
+    """Loads past conversation turns from PostgreSQL formatted cleanly for gr.Chatbot."""
+    formatted_history = []
+    if not DB_URL or not session_id:
         return formatted_history
 
     try:
@@ -74,58 +88,122 @@ def load_saved_history(session_id="gradio_default_session"):
                     (session_id,),
                 )
                 rows = cur.fetchall()
+                # Gradio expects tuples or OpenAI messages format based on configuration
                 for row in rows:
-                    formatted_history.append(
-                        {"role": "user", "content": row["user_message"]}
-                    )
-                    formatted_history.append(
-                        {"role": "assistant", "content": row["bot_response"]}
-                    )
+                    formatted_history.append({"role": "user", "content": row["user_message"]})
+                    formatted_history.append({"role": "assistant", "content": row["bot_response"]})
     except Exception as e:
         print(f"⚠️ Error loading chat history from PostgreSQL: {e}")
 
     return formatted_history
 
-def get_or_create_session_id(session_id):
-    """Generates a unique UUID session ID if one doesn't exist yet for the client."""
-    if not session_id:
-        session_id = f"session_{uuid.uuid4()}"
-    return session_id
 
-
-def chat_response(message, history, request: gr.Request):
+def chat_response(message, history, session_id):
+    """Processes messages through the master RAG agent and writes metadata to the backend."""
     try:
-        session_id = get_or_create_session_id(session_id)
+        if not session_id:
+            session_id = f"session_{uuid.uuid4().hex[:8]}"
+
         config = {"configurable": {"thread_id": session_id}}
         response = master_agent.invoke(
             {"messages": [("human", message)]}, config=config
         )
 
         final_answer = response["messages"][-1].content
-
-        # Save turn to PostgreSQL
         save_to_db(session_id, message, final_answer)
-        return final_answer
+
+        # Update history mapping logic
+        history.append({"role": "user", "content": message})
+        history.append({"role": "assistant", "content": final_answer})
+
+        # Dynamically reload session dropdown choices
+        updated_sessions = load_all_sessions()
+        if session_id not in updated_sessions:
+            updated_sessions.insert(0, session_id)
+
+        return "", history, session_id, gr.update(choices=updated_sessions, value=session_id)
 
     except Exception as e:
-        return f"An error occurred while processing your request:\n`{str(e)}`"
+        history.append({"role": "assistant", "content": f"An error occurred:\n`{str(e)}`"})
+        return "", history, session_id, gr.update()
 
+
+def start_new_chat():
+    """Resets the UI workspace, generating a brand new distinct tracking session."""
+    new_id = f"session_{uuid.uuid4().hex[:8]}"
+    return [], new_id, f"📝 Running on clean session: {new_id}"
+
+
+def switch_active_session(selected_session):
+    """Loads previous messages when an old session is clicked in the sidebar dropdown."""
+    if not selected_session:
+        return [], "", "⚠️ No active session selected."
+    history = load_saved_history(selected_session)
+    return history, selected_session, f"📂 Viewing history for: {selected_session}"
+
+
+# Initialize the database schema
 init_db()
 
-demo = gr.ChatInterface(
-    fn=chat_response,
-    type="messages",
-    chatbot=gr.Chatbot(
-        value=load_saved_history(),
-        height=550,
-    ),
-    title="Agentic RAG Assistant (PostgreSQL Backed)",
-    description="Ask general corporate questions or request information from internal knowledge base documents.",
-    examples=[
-        "Why do we need ensemble models?",
-        "Can you explain how random forests work?",
-    ],
-)
+# Build custom flexible block window layout
+with gr.Blocks(title="Agentic RAG System", css="footer {visibility: hidden}") as demo:
+    # State tracking variables
+    current_session = gr.State(value=f"session_{uuid.uuid4().hex[:8]}")
+    
+    gr.Markdown("# Agentic RAG Assistant (PostgreSQL Backed)")
+    
+    with gr.Row():
+        # SIDEBAR PANEL FOR NAVIGATION
+        with gr.Column(scale=1, min_width=280):
+            new_chat_btn = gr.Button("➕ New Chat Session", variant="primary")
+            
+            gr.Markdown("### 📂 Past Conversations")
+            session_dropdown = gr.Dropdown(
+                choices=load_all_sessions(),
+                label="Select History Log",
+                interactive=True,
+                value=None
+            )
+            status_bar = gr.Markdown("📝 Running on clean session: New")
+
+        # MAIN CHAT APPLICATION DISPLAY Window
+        with gr.Column(scale=4):
+            chatbot = gr.Chatbot(height=500)
+            with gr.Row():
+                txt_input = gr.Textbox(
+                    show_label=False,
+                    placeholder="Type your question here and press Enter...",
+                    container=False,
+                    scale=7
+                )
+                submit_btn = gr.Button("Send", variant="secondary", scale=1)
+
+    # UI EVENT TRIGGER ASSIGNMENTS
+    # 1. Action: Handling User message submissions
+    submit_btn.click(
+        chat_response, 
+        inputs=[txt_input, chatbot, current_session], 
+        outputs=[txt_input, chatbot, current_session, session_dropdown]
+    )
+    txt_input.submit(
+        chat_response, 
+        inputs=[txt_input, chatbot, current_session], 
+        outputs=[txt_input, chatbot, current_session, session_dropdown]
+    )
+
+    # 2. Action: Initiating a brand new clean conversation space
+    new_chat_btn.click(
+        start_new_chat,
+        inputs=[],
+        outputs=[chatbot, current_session, status_bar]
+    )
+
+    # 3. Action: Picking an alternative history thread from dropdown selector
+    session_dropdown.change(
+        switch_active_session,
+        inputs=[session_dropdown],
+        outputs=[chatbot, current_session, status_bar]
+    )
 
 if __name__ == "__main__":
-    demo.launch(server_name="127.0.0.1", server_port=0, share=False)
+    demo.launch(server_name="127.0.0.1", server_port=8000, share=False)
