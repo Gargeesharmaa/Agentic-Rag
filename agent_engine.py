@@ -1,15 +1,15 @@
 import os
-from typing import List, Literal, TypedDict
+from typing import List, Literal, Optional, TypedDict
 from dotenv import load_dotenv
 from langchain.tools import tool
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, SystemMessage
 from langchain_groq import ChatGroq
 from langgraph.graph import END, START, StateGraph
-from langgraph.prebuilt import create_react_agent 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.postgres import PostgresSaver
 from psycopg_pool import ConnectionPool
 from pydantic import BaseModel, Field
+from langgraph.prebuilt import create_react_agent
 
 from rag.retrieval import Retriever
 
@@ -22,17 +22,12 @@ checkpointer = None
 
 if DB_URL:
     try:
-        # Create connection pool
         pool = ConnectionPool(
             conninfo=DB_URL, 
             max_size=10, 
             kwargs={"autocommit": True, "prepare_threshold": 0}
         )
-        
-        # Initialize Postgres checkpointer with persistent pool
         checkpointer = PostgresSaver(pool)
-        
-        # Setup tables once
         with pool.connection() as conn:
             checkpointer.setup()
         print("✅ PostgreSQL checkpointer successfully initialized.")
@@ -45,8 +40,7 @@ else:
     checkpointer = MemorySaver()
 
 
-# Initialize fundamental elements
-document_retriever = Retriever()
+# Initialize LLM
 llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
 
@@ -54,7 +48,8 @@ class GraphState(TypedDict):
     question: str
     documents: List[str]
     generation: str
-    retry_count: int  # Prevent infinite loop
+    retry_count: int
+    file_path: Optional[str]  # Added to support custom document paths
 
 
 class GradeDocuments(BaseModel):
@@ -67,6 +62,10 @@ structured_llm_grader = llm.with_structured_output(GradeDocuments)
 
 
 def retrieve_node(state: GraphState):
+    # Dynamically pass target file_path/collection if provided in state
+    file_path = state.get("file_path", None)
+    document_retriever = Retriever(file_path=file_path)
+    
     retrieved_docs = document_retriever.retrieve(
         query=state["question"], top_k=3
     )
@@ -93,13 +92,28 @@ def grade_documents_node(state: GraphState):
 
 
 def generate_node(state: GraphState):
+    # STRICT FALLBACK if no documents matched or passed grading
     if not state["documents"]:
         return {
-            "generation": "I searched the internal documents but could not find relevant information to answer your question."
+            "generation": "Information not provided in the document."
         }
 
     context = "\n\n---\n\n".join(state["documents"])
-    prompt = f"Context:\n{context}\n\nQuestion: {state['question']}\nAnswer based strictly on context."
+    
+    # Strict prompt injection directly in generate node
+    prompt = f"""You are an expert, precise, and reliable AI assistant specializing in document analysis.
+
+### CORE DIRECTIVES:
+1. STRICT GROUNDING: Answer the user's question using ONLY the provided context retrieved from the document.
+2. ACCURACY OVER SUPPOSITION: Do not assume, extrapolate, or use outside knowledge.
+3. UNANSWERABLE QUESTIONS: If the answer cannot be directly and explicitly found in the retrieved context, respond with EXACTLY: "Information not provided in the document."
+4. TONALITY: Maintain a clear, factual, objective, and detailed tone.
+
+### RETRIEVED CONTEXT:
+{context}
+
+Question: {state['question']}
+"""
     return {"generation": llm.invoke(prompt).content}
 
 
@@ -113,10 +127,7 @@ def transform_query_node(state: GraphState):
     }
 
 
-def decide_to_generate(
-    state: GraphState,
-) -> Literal["generate", "transform_query"]:
-    # Stop infinite loops by setting a maximum retry threshold
+def decide_to_generate(state: GraphState) -> Literal["generate", "transform_query"]:
     if state.get("retry_count", 0) >= 2:
         return "generate"
 
@@ -144,12 +155,16 @@ agentic_rag_pipeline = workflow.compile()
 
 
 @tool
-def agentic_rag_tool(question: str) -> str:
-    """Retrieves internal document contents and generates answers based on user files,
-    company reports, or knowledge base data. Input must be a specific question string.
+def agentic_rag_tool(question: str, file_path: Optional[str] = None) -> str:
+    """Retrieves internal document contents and generates answers based on user files.
+    
+    Args:
+        question: Specific question string to search for.
+        file_path: Optional path to a specific document to filter retrieval.
     """
     inputs = {
         "question": question,
+        "file_path": file_path,
         "documents": [],
         "generation": "",
         "retry_count": 0,
@@ -157,25 +172,26 @@ def agentic_rag_tool(question: str) -> str:
     result = agentic_rag_pipeline.invoke(inputs)
 
     return result.get(
-        "generation", "Could not locate relevant documentation answers."
+        "generation", "Information not provided in the document."
     )
 
 
 tools = [agentic_rag_tool]
 
-system_prompt = (
-    "You are a versatile corporate assistant powered by Groq.\n"
-    "You have access to the 'agentic_rag_tool' to look up internal data.\n"
-    "Guidelines:\n"
-    "- For normal conversation or logic questions, answer directly.\n"
-    "- If asked about company policies, data, or file uploads, route the task to 'agentic_rag_tool'."
-)
+# Master Agent Prompt: Focuses on tool selection and direct pass-through of strict answers
+MASTER_SYSTEM_PROMPT = """You are an expert AI assistant for document analysis.
 
-# Create the Master React Agent using Postgres Checkpointer
+### CORE DIRECTIVES:
+1. Always use the `agentic_rag_tool` to search custom documents for user questions.
+2. Rely strictly on the tool output to answer the user.
+3. If the tool outputs "Information not provided in the document.", output that exact phrase to the user. Do NOT attempt to answer from outside knowledge.
+"""
+
+# Create Master Agent using Postgres Checkpointer
 master_agent = create_react_agent(
     model=llm, 
     tools=tools, 
-    prompt=system_prompt, 
+    prompt=MASTER_SYSTEM_PROMPT, 
     checkpointer=checkpointer
 )
 
@@ -187,6 +203,5 @@ if __name__ == "__main__":
         config=config
     )
 
-    # Print final result
     print("\n=== Final Master Agent Output ===")
     print(response["messages"][-1].content)
