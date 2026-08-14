@@ -22,3 +22,8 @@ chat_history.json
 data/
 db-data/
 .git/
+
+
+# Ignore generated Ragas evaluation outputs
+evals/reports/
+*.csv
