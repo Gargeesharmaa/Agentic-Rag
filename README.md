@@ -99,7 +99,11 @@ I've embedded thumbnails that link to the demo video and included raw GitHub ass
 
 Preview image (click to open demo video):
 
-[![Demo screenshot](https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/screenshot.png)](https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4)
+<p align="center">
+  <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">
+    <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/screenshot.png" alt="Demo screenshot" width="720" />
+  </a>
+</p>
 
 Embed a playable video (GitHub may not natively autoplay large files — you can link or use a GIF preview):
 
@@ -108,17 +112,17 @@ Embed a playable video (GitHub may not natively autoplay large files — you can
 <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">Watch demo video</a>
 
 <!-- Optional HTML video tag (works in some renderers): -->
-<video controls width="720">
+<video controls width="720" poster="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/screenshot.png">
   <source src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4" type="video/mp4" />
   Your browser does not support the video tag. Click to download: <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">demo</a>
 </video>
 ```
 
-If you prefer the smaller embedded thumbnail that links to the raw video (useful if GitHub blocks direct video playback), the markdown above does that already.
-
 Evaluation graph preview:
 
-![Evaluation graph](https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/eval_graph.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/eval_graph.png" alt="Evaluation graph" width="720" />
+</p>
 
 Note: If you prefer direct raw URLs to embed from GitHub, use:
 https://raw.githubusercontent.com/<owner>/<repo>/main/assets/demo.mp4
