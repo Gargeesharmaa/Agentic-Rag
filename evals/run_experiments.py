@@ -3,12 +3,16 @@ import os
 import sys
 import pandas as pd
 from datasets import Dataset
+import langchain_google_vertexai
+from pathlib import Path
+
+sys.modules['langchain_community.chat_models.vertexai'] = langchain_google_vertexai
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Import evaluate and metrics
 from ragas import evaluate
-from ragas.metrics import (
+from ragas.metrics.collections import (
     faithfulness,
     answer_relevancy,
     context_precision,
@@ -19,6 +23,8 @@ from ragas.metrics import (
 from agent_engine import agentic_rag_pipeline
 from evals.ragas_config import ragas_llm, ragas_embeddings
 
+EVALS_DIR = Path(__file__).resolve().parent
+DATASET_PATH = EVALS_DIR / "dataset.json"
 
 def run_evaluation():
     # 1. Load Evaluation Dataset
