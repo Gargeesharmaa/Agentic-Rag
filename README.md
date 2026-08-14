@@ -465,8 +465,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - **Issues:** [GitHub Issues](https://github.com/Gargeesharmaa/Agentic-Rag/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/Gargeesharmaa/Agentic-Rag/discussions)
-- **Email:** [Your Email]
-- **Twitter:** [@YourHandle]
+- **Email:** gargee6548@gmail.com
 
 ---
 
@@ -480,16 +479,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-## 🗺️ Roadmap
-
-- [ ] Support for vector databases (Pinecone, Weaviate)
-- [ ] Fine-tuning capabilities for specialized domains
-- [ ] Real-time streaming responses
-- [ ] Multi-language support
-- [ ] Advanced analytics dashboard
-- [ ] Mobile application
-- [ ] API endpoint documentation (FastAPI)
-
----
-
-**Built with ❤️ for intelligent document analysis**
+**Built by gargee sharma ❤️ **
