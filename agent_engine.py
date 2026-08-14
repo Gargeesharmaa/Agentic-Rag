@@ -41,7 +41,7 @@ else:
 
 
 # Initialize LLM
-llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
+llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
 
 
 class GraphState(TypedDict):
@@ -49,7 +49,7 @@ class GraphState(TypedDict):
     documents: List[str]
     generation: str
     retry_count: int
-    file_path: Optional[str]  # Added to support custom document paths
+    file_path: Optional[str] 
 
 
 class GradeDocuments(BaseModel):
@@ -62,33 +62,58 @@ structured_llm_grader = llm.with_structured_output(GradeDocuments)
 
 
 def retrieve_node(state: GraphState):
-    # Dynamically pass target file_path/collection if provided in state
     file_path = state.get("file_path", None)
+    
+    # Initialize retriever with specified path
     document_retriever = Retriever(file_path=file_path)
     
     retrieved_docs = document_retriever.retrieve(
         query=state["question"], top_k=3
     )
+    
+    doc_contents = [
+        d.page_content if hasattr(d, "page_content") else str(d)
+        for d in retrieved_docs
+    ]
+    
     return {
-        "documents": [d.page_content for d in retrieved_docs],
+        "documents": doc_contents,
         "question": state["question"],
+        "file_path": file_path,
+        "retry_count": state.get("retry_count", 0),
     }
-
 
 def grade_documents_node(state: GraphState):
     question = state["question"]
     filtered_docs = []
-    grade_prompt = (
-        "Question: {q}\nDocument:\n{d}\nIs this relevant? Reply 'yes' or 'no'."
-    )
 
     for doc in state["documents"]:
-        score = structured_llm_grader.invoke(
-            grade_prompt.format(q=question, d=doc)
-        )
-        if score.binary_score.lower() == "yes":
+        prompt = f"""You are an evaluator assessing relevance of a retrieved document to a user question.
+
+Document:
+{doc}
+
+Question:
+{question}
+
+Is this document relevant to the question? Answer with EXACTLY 'yes' or 'no'."""
+        
+        # Call the base LLM directly to avoid tool-use schema errors on Groq
+        response = llm.invoke(prompt).content.strip().lower()
+
+        if "yes" in response:
             filtered_docs.append(doc)
-    return {"documents": filtered_docs, "question": question}
+
+    # Fallback: keep retrieved docs if grader mistakenly drops everything
+    if not filtered_docs and state["documents"]:
+        filtered_docs = state["documents"]
+
+    return {
+        "documents": filtered_docs, 
+        "question": question,
+        "file_path": state.get("file_path", None),
+        "retry_count": state.get("retry_count", 0)
+    }
 
 
 def generate_node(state: GraphState):
@@ -116,16 +141,16 @@ Question: {state['question']}
 """
     return {"generation": llm.invoke(prompt).content}
 
-
 def transform_query_node(state: GraphState):
     prompt = f"Optimize this search query for a vector database: '{state['question']}'. Return only the optimized query."
     new_query = llm.invoke(prompt).content.strip()
+    
     return {
         "question": new_query,
         "documents": [],
+        "file_path": state.get("file_path", None),
         "retry_count": state.get("retry_count", 0) + 1,
     }
-
 
 def decide_to_generate(state: GraphState) -> Literal["generate", "transform_query"]:
     if state.get("retry_count", 0) >= 2:
@@ -191,7 +216,7 @@ MASTER_SYSTEM_PROMPT = """You are an expert AI assistant for document analysis.
 master_agent = create_react_agent(
     model=llm,
     tools=tools,
-    prompt="You are an expert agentic RAG assistant.",
+    prompt=MASTER_SYSTEM_PROMPT,
     checkpointer=checkpointer
 )
 
