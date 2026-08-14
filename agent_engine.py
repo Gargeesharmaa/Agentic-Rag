@@ -189,9 +189,9 @@ MASTER_SYSTEM_PROMPT = """You are an expert AI assistant for document analysis.
 
 # Create Master Agent using Postgres Checkpointer
 master_agent = create_react_agent(
-    model=llm, 
-    tools=tools, 
-    prompt=MASTER_SYSTEM_PROMPT, 
+    model=llm,
+    tools=tools,
+    prompt="You are an expert agentic RAG assistant.",
     checkpointer=checkpointer
 )
 
