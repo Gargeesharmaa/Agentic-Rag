@@ -1,74 +1,53 @@
-# 🤖 Agentic RAG — Intelligent Document Analysis (Nutshell)
+# 🤖 Agentic RAG — Intelligent Document Analysis & Agentic RAG
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)]() [![Python](https://img.shields.io/badge/python-3.9%2B-yellow)]()
 
-A lightweight, production-ready Retrieval-Augmented Generation (RAG) platform with agentic orchestration. Agentic RAG combines LangGraph agents, a PostgreSQL-backed conversation store, and multi-LL[...]
+Effective nutshell
 
-Quick start:
-```
-pip install -r requirements.txt
-cp .env-example .env
-python app.py
-```
+Agentic RAG is a compact, production-ready Retrieval-Augmented Generation (RAG) platform designed for trustworthy, auditable question-answering over documents. It combines agentic orchestration, multi-LLM generation, and a robust retrieval/evaluation pipeline so teams can build systems that answer questions with grounded evidence, full session history, and reproducible checkpoints.
 
----
+Project summary
 
-## 🚀 Project Nutshell
+Agentic RAG enables developers and analysts to:
+- Ingest diverse documents (PDF, DOCX, TXT, CSV) into a vector store.
+- Retrieve and rank relevant passages using configurable retrievers (Chroma/FAISS/Pinecone).
+- Use agentic logic to transform queries and retry when retrieval is insufficient.
+- Orchestrate one or more LLMs (Groq, OpenAI, Vertex AI, local HF models) to produce grounded answers.
+- Persist sessions, checkpoints, and trace data in PostgreSQL for replay, audit, and evaluation (RAGAS).
 
-Agentic RAG helps you ask questions about documents and get grounded, multi-turn answers while preserving full conversation history. It:
-- Retrieves relevant document context from a vector store,
-- Grades and filters those documents,
-- Generates answers via one or more LLMs,
-- Supports retries and agentic decision-making (transform/ retry),
-- Stores session history and checkpoints in PostgreSQL for reproducibility.
+Why use Agentic RAG
 
----
+- Grounded answers: responses cite and rely on retrieved document content, reducing hallucinations.
+- Agentic resilience: automated query transformation and retry improves answer coverage.
+- Reproducibility: Postgres-backed session & checkpoint store makes results auditable.
+- Flexible deployment: swap vector stores and models to match cost, latency, and accuracy needs.
 
-## ✨ Highlights & Use Cases
+Quick start
 
-- Multi-LLM orchestration (Groq, OpenAI, Vertex AI, local HF models)
-- Persistent session history & checkpointing (Postgres)
-- Document ingestion: PDF, DOCX, TXT, CSV
-- Gradio web UI for interactive demos
-- Built-in RAGAS evaluation and visualization
+1) Clone & create a virtual environment
 
----
-
-## 🧱 Tech Stack
-
-- Python 3.9+
-- LangGraph (agent orchestration)
-- LangChain ecosystem (LLM + retrieval integrations)
-- PostgreSQL (persistent history & checkpoints)
-- Vector store (Chroma / FAISS / Pinecone interchangeable)
-- Gradio (web UI)
-- RAGAS (evaluation)
-
----
-
-## ⚙️ Setup & Local Quick Start
-
-1. Clone & prepare
 ```bash
 git clone https://github.com/Gargeesharmaa/Agentic-Rag.git
 cd Agentic-Rag
 python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 cp .env-example .env
 ```
 
-2. Configure `.env` (example keys)
+2) Configure `.env` (example keys)
+
 ```
 GROQ_API_KEY=your_groq_key
 DATABASE_URL=postgresql://agentic_user:secure_password@localhost:5432/agentic_rag
 LANGSMITH_API_KEY=your_langsmith_key  # optional
 OPENAI_API_KEY=your_openai_key  # optional
+VECTOR_STORE=chroma  # or faiss, pinecone
 ```
 
-3. Start PostgreSQL
-- Docker (recommended)
+3) Start PostgreSQL (Docker recommended)
+
 ```bash
 docker run --name agentic-rag-db \
   -e POSTGRES_USER=agentic_user \
@@ -77,94 +56,113 @@ docker run --name agentic-rag-db \
   -p 5432:5432 -d postgres:15-alpine
 ```
 
-4. Run the app
+4) Run the app
+
 ```bash
 python app.py
-# Open http://127.0.0.1:8000
+# Open http://127.0.0.1:8000 in your browser
 ```
 
----
+Files of interest
 
-## 🧩 Configuration Tips
+- rag/retrieval.py — vector store selection & retrieval pipeline
+- agent_engine.py — agent orchestration and LLM selection
+- ingestion/ — document ingestion and chunking utilities
+- evals/ — RAGAS evaluation harness and visualization scripts
 
-- To switch vector stores, edit rag/retrieval.py (Chroma/FAISS/Pinecone).
-- To change the default LLM, update agent_engine.py (example: ChatGroq model selection).
-- Use LANGSMITH_TRACING=true for verbose traces.
+Demo & assets
 
----
+This README embeds previews and links to demo assets located in `assets/`. Use the raw URLs below if you need direct access or to embed the media elsewhere:
 
-## 📂 Assets (Demo, Screenshot & Eval Graph)
+- Demo photo (thumbnail): https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_photo.png
+- Demo video (playable): https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4
+- Code generation preview: https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/Code_Generated_Image.png
+- Evaluation graph (example): https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/eval_graph.png
 
-I've embedded thumbnails that link to the demo video and included raw GitHub asset URLs so they render correctly on GitHub.
-
-Preview image (click to open demo video):
+Preview (click to open demo video):
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">
-    <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/screenshot.png" alt="Demo screenshot" width="720" />
+  <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4">
+    <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_photo.png" alt="Demo photo" width="720" />
   </a>
 </p>
 
-Embed a playable video (GitHub may not natively autoplay large files — you can link or use a GIF preview):
+Playable video (in supported renderers):
 
 ```html
-<!-- Raw video URL (replace branch/main and filenames as needed) -->
-<a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">Watch demo video</a>
-
-<!-- Optional HTML video tag (works in some renderers): -->
-<video controls width="720" poster="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/screenshot.png">
-  <source src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4" type="video/mp4" />
-  Your browser does not support the video tag. Click to download: <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">demo</a>
+<video controls width="720" poster="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_photo.png">
+  <source src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4" type="video/mp4" />
+  Your browser does not support the video tag. Click to download: <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4">demo</a>
 </video>
 ```
 
-Evaluation graph preview:
+Code-generation preview image (used in documentation):
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/eval_graph.png" alt="Evaluation graph" width="720" />
+  <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/Code_Generated_Image.png" alt="Code generation preview" width="720" />
 </p>
 
-Note: If you prefer direct raw URLs to embed from GitHub, use:
-https://raw.githubusercontent.com/<owner>/<repo>/main/assets/demo.mp4
-(Replace <owner>/<repo>/main and filenames accordingly.)
+Evaluation with RAGAS
 
----
-
-## 📊 Evaluation (RAGAS) — Summary
-
-We evaluate model outputs with the RAGAS framework. Example aggregated metrics:
+Agentic RAG integrates RAGAS to evaluate faithfulness, precision, recall, and relevancy. The evaluation harness supports batch scoring and visualizations. Example aggregated metrics (illustrative):
 
 | Metric | Score | Interpretation |
-|--------|-------:|----------------|
+|--------|------:|----------------|
 | Faithfulness | 0.89 | Responses grounded in source content |
-| Context Precision | 0.80 | High-quality retrieval relevance |
-| Answer Relevancy | 0.66 | Useful answers, room to improve |
-| Context Recall | 0.67 | Retrieval finds 2/3 relevant docs |
+| Context Precision | 0.80 | Retrieved passages are relevant |
+| Answer Relevancy | 0.66 | Answers are generally useful |
+| Context Recall | 0.67 | Retrieval finds ~2/3 of relevant content |
 
-Re-run evaluations:
+Run evaluations and visualize results:
+
 ```bash
 python evals/run_ragas_eval.py --config evals/config.yaml --out results/eval.json
-# visualize
 python evals/plot_results.py results/eval.json --out assets/eval_graph.png
 ```
 
-Include the produced `assets/eval_graph.png` in this README (see Assets section).
+Interpretation & best practices
 
----
+- Use a held-out evaluation set to avoid overfitting retrieval heuristics.
+- Compare multiple LLMs with the same retrieval outputs to isolate model variance.
+- Tune chunk size and overlap to balance context relevance vs. noise.
 
-## 🧪 How the Pipeline Works (Brief)
+Pipeline & workflow
 
-1. User query → Retrieval from vector store
-2. Documents graded for relevance
-3. If relevant → Generate grounded answer
-4. If not → Transform query & retry (max 2 retries)
-5. Save session & checkpoints to Postgres for audit & replay
+High-level pipeline when a user submits a query:
 
----
+1. User submits query (web UI or API)
+2. Retriever fetches top-k document chunks from the vector store
+3. Relevance scorer ranks/filters retrieved chunks
+4. If relevance is sufficient → LLM(s) generate grounded answer with citations
+5. If relevance is insufficient → Agent applies transform (rephrase/expand) and retries
+6. Final answer and supporting context are saved to Postgres as a session and checkpoint
+7. Optionally, evaluation traces are recorded and scored by RAGAS
 
-## 🧰 API Snippets
+Mermaid flowchart (renders on platforms that support Mermaid):
 
-Simple single-query invocation:
+```mermaid
+flowchart TD
+  A[User query] --> B[Retriever (Chroma/FAISS/Pinecone)]
+  B --> C[Relevance Scorer]
+  C -->|sufficient| D[LLM(s) generate answer]
+  C -->|insufficient| E[Agent transform & retry]
+  E --> B
+  D --> F[Save session & checkpoints (Postgres)]
+  F --> G[Evaluation (RAGAS) & Visualization]
+```
+
+Detailed workflow notes
+
+- Retriever: configurable vector DB with embeddings; tune top_k and distance metric.
+- Relevance scorer: combines embedding similarity with heuristics (keyword overlap, date filters).
+- Agent transforms: may expand the query, add clarifying constraints, or switch retrieval filters.
+- LLM orchestration: parallel or sequential calls to different models with majority/score-based selection.
+- Storage: sessions and checkpoints include raw messages, retrieved contexts, model outputs, and evaluation metadata.
+
+API examples
+
+Single-query invocation
+
 ```python
 from agent_engine import master_agent
 config = {"configurable": {"thread_id": "user_session_123"}}
@@ -172,26 +170,30 @@ response = master_agent.invoke({"messages":[("human","What is in the document?")
 print(response["messages"][-1].content)
 ```
 
-Multi-turn example:
+Multi-turn example
+
 ```python
 messages = [("human","First question?"), ("assistant","Response..."), ("human","Follow-up?")]
 response = master_agent.invoke({"messages": messages}, config=config)
 ```
 
----
+Configuration tips
 
-## 🧭 Troubleshooting & Tips
+- Switch vector stores by editing `rag/retrieval.py`.
+- Change default LLM in `agent_engine.py`.
+- Use `LANGSMITH_TRACING=true` to capture verbose traces for LangGraph/LangChain integrations.
 
-- "ModuleNotFoundError" → pip install -r requirements.txt
-- DB connection refused → ensure Docker/Postgres is running and env DATABASE_URL is correct
-- MemoryError: process smaller documents or increase system resources
+Troubleshooting
 
----
+- ModuleNotFoundError → pip install -r requirements.txt
+- DB connection refused → ensure Docker/Postgres is running and `DATABASE_URL` is correct
+- MemoryError → reduce document size, lower chunk sizes, or increase system resources
 
-## 🤝 Contributing
+Testing & contributing
 
-1. Fork -> branch -> commit -> push -> PR
-2. Run tests & formatters:
+1. Fork -> create a branch -> implement changes -> open a PR
+2. Run tests & formatters locally:
+
 ```bash
 pip install -r requirements-dev.txt
 pytest
@@ -199,19 +201,13 @@ black .
 flake8 .
 ```
 
----
-
-## 📞 Support & Contact
+Support & contact
 
 - Issues: https://github.com/Gargeesharmaa/Agentic-Rag/issues
 - Email: gargee6548@gmail.com
 
----
+License
 
-## 📝 License
+MIT — see the LICENSE file.
 
-MIT License — see the LICENSE file.
-
----
-
-Made with ❤️ by gargee sharma
+Made with ❤️ by Gargee Sharma
