@@ -9,8 +9,8 @@ from ragas.embeddings import LangchainEmbeddingsWrapper
 load_dotenv()
 
 # 1. Free Evaluator LLM via Groq
-evaluator_llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
+base_llm = ChatGroq(
+    model="llama-3.1-8b-instant",
     temperature=0,
     api_key=os.getenv("GROQ_KEY")
 )
@@ -21,5 +21,5 @@ evaluator_embeddings = HuggingFaceEmbeddings(
 )
 
 # 3. Wrap for Ragas
-ragas_llm = LangchainLLMWrapper(evaluator_llm)
+ragas_llm = LangchainLLMWrapper(base_llm)
 ragas_embeddings = LangchainEmbeddingsWrapper(evaluator_embeddings)
