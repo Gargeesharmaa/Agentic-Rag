@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)]() [![Python](https://img.shields.io/badge/python-3.9%2B-yellow)]()
 
-A lightweight, production-ready Retrieval-Augmented Generation (RAG) platform with agentic orchestration. Agentic RAG combines LangGraph agents, a PostgreSQL-backed conversation store, and multi-LLM support to enable reliable, multi-turn document analysis with full session state, evals, and visualized metrics.
+A lightweight, production-ready Retrieval-Augmented Generation (RAG) platform with agentic orchestration. Agentic RAG combines LangGraph agents, a PostgreSQL-backed conversation store, and multi-LL[...]
 
 Quick start:
 ```
@@ -95,25 +95,30 @@ python app.py
 
 ## 📂 Assets (Demo, Screenshot & Eval Graph)
 
-Add your demo video, a screenshot of the UI, and the evaluation graph in `assets/`. Replace the placeholders below with the actual filenames.
+I've embedded thumbnails that link to the demo video and included raw GitHub asset URLs so they render correctly on GitHub.
 
 Preview image (click to open demo video):
-[![Demo screenshot](assets/screenshot.png)](assets/demo.mp4)
+
+[![Demo screenshot](https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/screenshot.png)](https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4)
 
 Embed a playable video (GitHub may not natively autoplay large files — you can link or use a GIF preview):
+
 ```html
-<!-- If you have a raw file URL, example below. Replace branch/main and filenames as needed. -->
-<a href="assets/demo.mp4">Watch demo video</a>
+<!-- Raw video URL (replace branch/main and filenames as needed) -->
+<a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">Watch demo video</a>
 
 <!-- Optional HTML video tag (works in some renderers): -->
 <video controls width="720">
-  <source src="assets/demo.mp4" type="video/mp4" />
-  Your browser does not support the video tag. Click to download: <a href="assets/demo.mp4">demo</a>
+  <source src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4" type="video/mp4" />
+  Your browser does not support the video tag. Click to download: <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo.mp4">demo</a>
 </video>
 ```
 
+If you prefer the smaller embedded thumbnail that links to the raw video (useful if GitHub blocks direct video playback), the markdown above does that already.
+
 Evaluation graph preview:
-![Evaluation graph](assets/eval_graph.png)
+
+![Evaluation graph](https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/eval_graph.png)
 
 Note: If you prefer direct raw URLs to embed from GitHub, use:
 https://raw.githubusercontent.com/<owner>/<repo>/main/assets/demo.mp4
