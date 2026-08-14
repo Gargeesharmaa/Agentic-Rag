@@ -12,3 +12,6 @@ pypdf
 langchain-google-genai
 langsmith
 gradio
+pytest
+ragas
+deepeval
