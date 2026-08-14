@@ -14,4 +14,5 @@ langsmith
 gradio
 pytest
 ragas
-deepeval
+datasets
+pandas

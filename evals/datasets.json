@@ -1,0 +1,52 @@
+[
+  {
+    "instruction": "What is the formal definition of machine learning program or learner according to the text?",
+    "context": "Definition\nA computer program which learns from experience is called a machine learning program or simply a learning program. Such a program is sometimes also referred to as a learner.[cite: 1]",
+    "response": "A computer program that learns from experience is defined as a machine learning program, a learning program, or simply a learner[cite: 1]."
+  },
+  {
+    "instruction": "List the four main components of the learning process described in the document.",
+    "context": "The learning process, whether by a human or a machine, can be divided into four components, namely, data storage, abstraction, generalization and evaluation.[cite: 1]",
+    "response": "The four main components of the learning process are: data storage, abstraction, generalization, and evaluation[cite: 1]."
+  },
+  {
+    "instruction": "What are the three main categories of learning models introduced in Unit I?",
+    "context": "The basic idea of Learning models has divided into three categories.\nFor a given problem, the collection of all possible outcomes represents the sample space or instance space.\n Using a Logical expression. (Logical models)\n Using the Geometry of the instance space. (Geometric models)\n Using Probability to classify the instance space. (Probabilistic models)[cite: 1]",
+    "response": "The three main categories of learning models are Logical models (using logical expressions), Geometric models (using the geometry of instance space), and Probabilistic models (using probability to classify instance space)[cite: 1]."
+  },
+  {
+    "instruction": "In the checkers learning problem design, what is the formula defined for the target function representation?",
+    "context": "Target Function Representation : ^V = w0 + w1 · x1(b) + w2 · x2(b) + w3 · x3(b) + w4 · x4(b) +w5 · x5(b) + w6 · x6(b)[cite: 1]",
+    "response": "The target function representation is defined as: ^V = w0 + w1 · x1(b) + w2 · x2(b) + w3 · x3(b) + w4 · x4(b) + w5 · x5(b) + w6 · x6(b)[cite: 1]."
+  },
+  {
+    "instruction": "Differentiate between Supervised and Unsupervised learning based on the provided notes.",
+    "context": "Supervised learning algorithms are trained using labeled data. Unsupervised learning algorithms are trained using unlabeled data. Supervised learning model takes direct feedback to check if it is predicting correct output or not. Unsupervised learning model does not take any feedback. Supervised learning model predicts the output. Unsupervised learning model finds the hidden patterns in data.[cite: 1]",
+    "response": "Supervised learning algorithms train on labeled datasets with direct feedback to predict outputs, whereas unsupervised learning algorithms train on unlabeled datasets without feedback to discover hidden patterns and structures[cite: 1]."
+  },
+  {
+    "instruction": "How is information gain defined in the context of the ID3 decision tree algorithm?",
+    "context": "Information gain is also called as Kullback-Leibler divergence denoted by IG(S,A) for a set S is the effective change in entropy after deciding on a particular attribute A. It measures the relative change in entropy with respect to the independent variables IG(S, A) = H(S) - H(S, A)[cite: 1]",
+    "response": "Information gain, IG(S, A), represents the change in entropy after partitioning a set S using attribute A, calculated as IG(S, A) = H(S) - H(S, A)[cite: 1]."
+  },
+  {
+    "instruction": "What are the main assumptions of Linear Regression listed in the document?",
+    "context": "Assumptions of Linear Regression\nBelow are some important assumptions of Linear Regression...\no Linear relationship between the features and target\no Small or no multicollinearity between the features\no Homoscedasticity Assumption\no Normal distribution of error terms\no No autocorrelations[cite: 1]",
+    "response": "The five assumptions of Linear Regression are: a linear relationship between features and target, small or no multicollinearity, homoscedasticity, normal distribution of error terms, and no autocorrelations[cite: 1]."
+  },
+  {
+    "instruction": "What is a Support Vector in Support Vector Machines (SVM)?",
+    "context": "The data points or vectors that are the closest to the hyperplane and which affect the position of the hyperplane are termed as Support Vector. Since these vectors support the hyperplane, hence called a Support vector.[cite: 1]",
+    "response": "Support vectors are the data points or vectors located closest to the decision boundary (hyperplane) that directly determine its position[cite: 1]."
+  },
+  {
+    "instruction": "Describe the main difference between k-means and k-modes clustering algorithms.",
+    "context": "k-modes is an extension of k-means. Instead of distances it uses dissimilarities (that is, quantification of the total mismatches between two objects: the smaller this number, the more similar the two objects). And instead of means, it uses modes.[cite: 1]",
+    "response": "While k-means utilizes numerical distances and means, k-modes is designed for categorical data, utilizing dissimilarity measures based on total mismatches and modes as centroids[cite: 1]."
+  },
+  {
+    "instruction": "What are the two major categories of multiexpert combination methods in Ensemble Learning?",
+    "context": "Multiexpert combination methods have base-learners that work in parallel. These methods can in turn be divided into two:\n In the global approach, also called learner fusion, given an input, all base-learners generate an output and all these outputs are used. Examples are voting and stacking.\n In the local approach, or learner selection, for example, in mixture of experts, there is a gating model, which looks at the input and chooses one (or very few) of the learners as responsible for generating the output.[cite: 1]",
+    "response": "The two categories of multiexpert combination methods are the global approach (learner fusion, e.g., voting and stacking) and the local approach (learner selection, e.g., mixture of experts with a gating model)[cite: 1]."
+  }
+]
