@@ -2,6 +2,8 @@ import json
 import os
 import pandas as pd
 from datasets import Dataset
+
+# Import evaluate and metrics
 from ragas import evaluate
 from ragas.metrics import (
     faithfulness,
@@ -51,24 +53,35 @@ def run_evaluation():
     # 3. Convert to HuggingFace Dataset required by Ragas
     eval_dataset = Dataset.from_dict(results_data)
 
-    # 4. Configure Ragas Metrics with Free Models
+    # 4. Define metrics list
     metrics = [faithfulness, answer_relevancy, context_precision, context_recall]
-    for metric in metrics:
-        metric.llm = ragas_llm
-        if hasattr(metric, "embeddings"):
-            metric.embeddings = ragas_embeddings
 
-    # 5. Run Evaluation
+    # 5. Run Evaluation (Pass llm and embeddings explicitly here)
     print("🚀 Running Ragas evaluation with Groq...")
-    score = evaluate(dataset=eval_dataset, metrics=metrics)
+    score = evaluate(
+        dataset=eval_dataset,
+        metrics=metrics,
+        llm=ragas_llm,
+        embeddings=ragas_embeddings
+    )
 
     # 6. Save & Display Results
     df = score.to_pandas()
     os.makedirs("evals/reports", exist_ok=True)
     df.to_csv("evals/reports/experiment_results.csv", index=False)
-    
+
     print("\n=== Ragas Evaluation Summary ===")
-    print(df[["user_input", "faithfulness", "answer_relevancy", "context_precision", "context_recall"]])
+    print(
+        df[
+            [
+                "user_input",
+                "faithfulness",
+                "answer_relevancy",
+                "context_precision",
+                "context_recall",
+            ]
+        ]
+    )
 
 
 if __name__ == "__main__":
