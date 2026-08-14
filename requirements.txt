@@ -4,7 +4,7 @@ sentence-transformers
 langgraph
 langchain
 pydantic
-langchain-community
+angchain-community==0.2.19
 langchain-groq
 langchain-chroma
 python-dotenv
@@ -13,6 +13,8 @@ langchain-google-genai
 langsmith
 gradio
 pytest
-ragas
+ragas==0.1.21
 datasets
 pandas
+langchain-google-vertexai
+google-cloud-aiplatform
