@@ -3,6 +3,8 @@ import os
 import pandas as pd
 from datasets import Dataset
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 # Import evaluate and metrics
 from ragas import evaluate
 from ragas.metrics import (
