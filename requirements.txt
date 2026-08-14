@@ -30,3 +30,5 @@ pypdf
 langsmith
 gradio
 pytest
+
+psycopg2-binary>=2.9.0
