@@ -10,7 +10,7 @@ load_dotenv()
 
 # 1. Free Evaluator LLM via Groq
 base_llm = ChatGroq(
-    model="llama-3.1-8b-instant",
+    model="llama-3.3-70b-versatile",
     temperature=0,
     api_key=os.getenv("GROQ_KEY")
 )
