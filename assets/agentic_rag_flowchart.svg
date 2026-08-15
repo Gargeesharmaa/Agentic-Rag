@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <style>
+    .box { fill:#ffffff; stroke:#2d3748; stroke-width:2; rx:8; }
+    .title { font: bold 18px sans-serif; fill:#0f172a; }
+    .label { font: 14px sans-serif; fill:#0f172a; }
+    .sub { font: 12px sans-serif; fill:#334155; }
+    .arrow { stroke:#2563eb; stroke-width:2; fill:none; marker-end:url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#f8fafc" />
+
+  <!-- User Layer -->
+  <g transform="translate(50,30)">
+    <rect class="box" x="0" y="0" width="200" height="60" />
+    <text class="title" x="100" y="34" text-anchor="middle">User Layer</text>
+    <text class="sub" x="100" y="54" text-anchor="middle">Web UI / API / CLI</text>
+  </g>
+
+  <!-- Ingestion -->
+  <g transform="translate(300,30)">
+    <rect class="box" x="0" y="0" width="240" height="120" />
+    <text class="title" x="120" y="26" text-anchor="middle">Ingestion & Preprocessing</text>
+    <text class="label" x="20" y="56">• Upload docs (PDF/DOCX/TXT/CSV)</text>
+    <text class="label" x="20" y="76">• Text extraction & OCR</text>
+    <text class="label" x="20" y="96">• Chunking & metadata</text>
+  </g>
+
+  <!-- Embeddings & Vector Store -->
+  <g transform="translate(620,30)">
+    <rect class="box" x="0" y="0" width="260" height="120" />
+    <text class="title" x="130" y="26" text-anchor="middle">Embeddings & Vector Store</text>
+    <text class="label" x="20" y="56">• Generate embeddings</text>
+    <text class="label" x="20" y="76">• Vector DB: Chroma / FAISS / Pinecone</text>
+  </g>
+
+  <!-- Retrieval -->
+  <g transform="translate(300,190)">
+    <rect class="box" x="0" y="0" width="240" height="110" />
+    <text class="title" x="120" y="26" text-anchor="middle">Retrieval & Scoring</text>
+    <text class="label" x="20" y="56">• Retriever (top-k)</text>
+    <text class="label" x="20" y="76">• Relevance scorer (similarity + heuristics)</text>
+  </g>
+
+  <!-- Agent Loop -->
+  <g transform="translate(620,190)">
+    <rect class="box" x="0" y="0" width="260" height="110" />
+    <text class="title" x="130" y="26" text-anchor="middle">Agentic Transformation Loop</text>
+    <text class="label" x="20" y="56">• Assess retrieval sufficiency</text>
+    <text class="label" x="20" y="76">• Transform query & retry</text>
+  </g>
+
+  <!-- LLM Orchestration -->
+  <g transform="translate(300,360)">
+    <rect class="box" x="0" y="0" width="580" height="130" />
+    <text class="title" x="290" y="30" text-anchor="middle">LLM Orchestration</text>
+    <text class="label" x="20" y="60">• Dispatch to one or more LLMs (OpenAI, Groq, Vertex, local)</text>
+    <text class="label" x="20" y="80">• Grounded answer generation with citations</text>
+    <text class="label" x="20" y="100">• Aggregate/score model outputs</text>
+  </g>
+
+  <!-- Storage -->
+  <g transform="translate(50,540)">
+    <rect class="box" x="0" y="0" width="320" height="120" />
+    <text class="title" x="160" y="30" text-anchor="middle">Persistence & Tracing</text>
+    <text class="label" x="20" y="60">• Postgres: sessions & checkpoints</text>
+    <text class="label" x="20" y="80">• Raw messages, retrieved contexts, traces</text>
+    <text class="label" x="20" y="100">• Optional LangSmith / LangGraph</text>
+  </g>
+
+  <!-- Evaluation -->
+  <g transform="translate(420,540)">
+    <rect class="box" x="0" y="0" width="320" height="120" />
+    <text class="title" x="160" y="30" text-anchor="middle">Evaluation (RAGAS)</text>
+    <text class="label" x="20" y="60">• Collect traces & compute metrics</text>
+    <text class="label" x="20" y="80">• Faithfulness, precision, recall, relevancy</text>
+    <text class="label" x="20" y="100">• Visualizations & dashboards</text>
+  </g>
+
+  <!-- Arrows & flow -->
+  <path class="arrow" d="M250 60 L300 60" />
+  <path class="arrow" d="M540 60 L620 60" />
+  <path class="arrow" d="M400 150 L400 190" />
+  <path class="arrow" d="M640 150 L640 190" />
+  <path class="arrow" d="M420 240 L420 290" />
+  <path class="arrow" d="M760 240 L760 290" />
+  <path class="arrow" d="M590 300 L590 360" />
+  <path class="arrow" d="M470 490 L470 540" />
+  <path class="arrow" d="M770 490 L640 540" />
+
+  <!-- Retry loop arrow -->
+  <path class="arrow" d="M760 240 Q840 175 760 110" />
+
+  <!-- Answer arrow back to user -->
+  <path class="arrow" d="M590 420 L150 120" />
+
+  <!-- Labels near arrows -->
+  <text class="sub" x="520" y="58" text-anchor="middle">embeddings →</text>
+
+  <!-- Footer -->
+  <text class="sub" x="600" y="880" text-anchor="middle">Agentic RAG — exported flowchart (vector SVG)</text>
+</svg>
