@@ -4,7 +4,7 @@
 
 Effective nutshell
 
-Agentic RAG is a compact, production-ready Retrieval-Augmented Generation (RAG) platform designed for trustworthy, auditable question-answering over documents. It combines agentic orchestration, multi-LLM generation, and a robust retrieval/evaluation pipeline so teams can build systems that answer questions with grounded evidence, full session history, and reproducible checkpoints.
+Agentic RAG is a compact, production-ready Retrieval-Augmented Generation (RAG) platform designed for trustworthy, auditable question-answering over documents. It combines agentic orchestration, mu[...]
 
 Project summary
 
@@ -82,10 +82,19 @@ This README embeds previews and links to demo assets located in `assets/`. Use t
 Preview (click to open demo video):
 
 <p align="center">
+  <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4">
     <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_photo.png" alt="Demo photo" width="720" />
   </a>
 </p>
 
+Playable video (in supported renderers):
+
+```html
+<video controls width="720" poster="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_photo.png">
+  <source src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4" type="video/mp4" />
+  Your browser does not support the video tag. Click to download: <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4">demo</a>
+</video>
+```
 
 Code-generation preview image (used in documentation):
 
@@ -128,6 +137,104 @@ High-level pipeline when a user submits a query:
 5. If relevance is insufficient → Agent applies transform (rephrase/expand) and retries
 6. Final answer and supporting context are saved to Postgres as a session and checkpoint
 7. Optionally, evaluation traces are recorded and scored by RAGAS
+
+Perfect flowchart (detailed)
+
+The following Mermaid diagram provides a comprehensive, modular flowchart of Agentic RAG. It splits the system into clear subsystems: ingestion, embedding & vector store, retrieval & scoring, agentic retry loop, LLM orchestration, storage, evaluation, and user-facing layers.
+
+```mermaid
+flowchart TB
+  subgraph UI [User Layer]
+    U[User (Web UI / API / CLI)]
+  end
+
+  subgraph Ingest [Ingestion & Preprocessing]
+    direction TB
+    I1[Upload documents (PDF/DOCX/TXT/CSV)]
+    I2[Text extraction & OCR]
+    I3[Chunking & metadata tagging]
+  end
+
+  subgraph Embed [Embeddings & Vector Store]
+    direction TB
+    E1[Generate embeddings]
+    E2{Vector DB}
+    E2a[Chroma]
+    E2b[FAISS]
+    E2c[Pinecone]
+  end
+
+  subgraph Retrieve [Retrieval & Scoring]
+    direction TB
+    R1[Retriever (top-k)]
+    R2[Relevance scorer (similarity + heuristics)]
+    R3[Filter & rank passages]
+  end
+
+  subgraph AgentLoop [Agentic Transformation Loop]
+    direction TB
+    A1[Assess retrieval sufficiency]
+    A2[Apply transforms (rephrase, expand, constraints)]
+    A3[Retry retrieval with modified query]
+  end
+
+  subgraph LLMs [LLM Orchestration]
+    direction TB
+    L1[Dispatch to one or more LLMs]
+    L2[Grounded answer generation with citations]
+    L3[Aggregate / score model outputs]
+  end
+
+  subgraph Storage [Persistence & Tracing]
+    direction TB
+    S1[Postgres: sessions & checkpoints]
+    S2[Raw messages, retrieved contexts, model outputs, traces]
+    S3[Optional LangSmith / LangGraph traces]
+  end
+
+  subgraph Eval [Evaluation (RAGAS)]
+    direction TB
+    V1[Collect evaluation traces]
+    V2[Compute metrics: faithfulness, precision, recall, relevancy]
+    V3[Visualizations & dashboards]
+  end
+
+  U -->|submit query| I1
+  I1 --> I2 --> I3 --> E1 --> E2
+  U -->|query| R1
+  E2 --> R1
+  R1 --> R2 --> R3 --> A1
+  A1 -- sufficient --> L1
+  A1 -- insufficient --> A2 --> A3 --> R1
+  L1 --> L2 --> L3
+  L3 --> S1
+  R3 --> S2
+  S1 --> V1
+  L2 -->|answer| U
+  V1 --> V2 --> V3
+
+  %% styling
+  classDef subsystem fill:#f9f9f9,stroke:#bbb,stroke-width:1px;
+  class Ingest,Embed,Retrieve,AgentLoop,LLMs,Storage,Eval subsystem;
+```
+
+Mermaid notes
+
+- This diagram is meant to be rendered on platforms that support Mermaid (GitHub, Mermaid viewers, some Markdown renderers).
+- For README viewers that don't render Mermaid, consider exporting this diagram as an SVG/PNG and adding it to `assets/` (I can help generate one if you want).
+
+Mermaid (compact) flowchart (previous simplified view)
+
+```mermaid
+flowchart TD
+  A[User query] --> B[Retriever (Chroma/FAISS/Pinecone)]
+  B --> C[Relevance Scorer]
+  C -->|sufficient| D[LLM(s) generate answer]
+  C -->|insufficient| E[Agent transform & retry]
+  E --> B
+  D --> F[Save session & checkpoints (Postgres)]
+  F --> G[Evaluation (RAGAS) & Visualization]
+```
 
 Detailed workflow notes
 
