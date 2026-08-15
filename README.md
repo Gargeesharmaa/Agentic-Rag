@@ -82,19 +82,10 @@ This README embeds previews and links to demo assets located in `assets/`. Use t
 Preview (click to open demo video):
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4">
     <img src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_photo.png" alt="Demo photo" width="720" />
   </a>
 </p>
 
-Playable video (in supported renderers):
-
-```html
-<video controls width="720" poster="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_photo.png">
-  <source src="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4" type="video/mp4" />
-  Your browser does not support the video tag. Click to download: <a href="https://raw.githubusercontent.com/Gargeesharmaa/Agentic-Rag/main/assets/demo_video.mp4">demo</a>
-</video>
-```
 
 Code-generation preview image (used in documentation):
 
@@ -137,19 +128,6 @@ High-level pipeline when a user submits a query:
 5. If relevance is insufficient → Agent applies transform (rephrase/expand) and retries
 6. Final answer and supporting context are saved to Postgres as a session and checkpoint
 7. Optionally, evaluation traces are recorded and scored by RAGAS
-
-Mermaid flowchart (renders on platforms that support Mermaid):
-
-```mermaid
-flowchart TD
-  A[User query] --> B[Retriever (Chroma/FAISS/Pinecone)]
-  B --> C[Relevance Scorer]
-  C -->|sufficient| D[LLM(s) generate answer]
-  C -->|insufficient| E[Agent transform & retry]
-  E --> B
-  D --> F[Save session & checkpoints (Postgres)]
-  F --> G[Evaluation (RAGAS) & Visualization]
-```
 
 Detailed workflow notes
 
