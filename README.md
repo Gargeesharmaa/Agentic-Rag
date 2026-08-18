@@ -197,4 +197,4 @@ License
 
 MIT — see the LICENSE file.
 
-Made with ❤️ by Gargee Sharma
+Made with ❤️ by GARGEE SHARMA
